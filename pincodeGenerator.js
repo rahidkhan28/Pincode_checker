@@ -1,18 +1,23 @@
-class pincodeGenerator extends HTMLElement{
-    constructor(){
+class pincodeGenerator extends HTMLElement {
+    constructor() {
         super();
-        this.attachShadow({mode:"open"});
+        this.attachShadow({mode: "open"});
 
         this.shadowRoot.innerHTML = `
         <link rel="stylesheet" href="style.css">
-        <input type="text" placeholder="Enter Pincode"/>
-        <button type="submit" id="submitBtn">SUBMIT</button>
-        <h1>Address</h1>
-        <h3 id="data"></h3>
+
+        <div class="container">
+            <div>
+                <input type="text" placeholder="Enter Pincode"/>
+                <button type="submit" id="submitBtn">SUBMIT</button>
+            </div>
+            <h1></h1>
+            <table id="data"></table>
+        </div>
         `;
     }
 
-    connectedCallback(){
+    connectedCallback() {
         const submitBtn = this.shadowRoot.getElementById("submitBtn");
         submitBtn.addEventListener("click", this.handleSubmit.bind(this));
     }
@@ -31,13 +36,35 @@ class pincodeGenerator extends HTMLElement{
             alert("Failed to fetch data.");
             return;
         }
-        
+
         const data = await response.json();
         let fetchedData = this.shadowRoot.getElementById("data");
+        let text = this.shadowRoot.querySelector("h1");
         fetchedData.innerHTML = ''; 
+
+        if (data[0].Status !== "Success") {
+            alert("Invalid Pincode.");
+            return;
+        }
+
+        text.innerHTML = "Address";
+
+        const tableHeader = `
+            <tr>
+                <th>Name</th>
+                <th>Delivery Status</th>
+            </tr>
+        `;
+        fetchedData.innerHTML = tableHeader;
+
         data[0].PostOffice.forEach((x) => {
-            console.log(x.Name, "-", x.DeliveryStatus);
-            fetchedData.innerHTML += `${x.Name} - ${x.DeliveryStatus}<br>`;
+            const tableRow = `
+                <tr>
+                    <td>${x.Name}</td>
+                    <td>${x.DeliveryStatus}</td>
+                </tr>
+            `;
+            fetchedData.innerHTML += tableRow;
         });
     }
 }
