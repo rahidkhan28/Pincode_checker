@@ -4,6 +4,7 @@ class pincodeGenerator extends HTMLElement{
         this.attachShadow({mode:"open"});
 
         this.shadowRoot.innerHTML = `
+        <link rel="stylesheet" href="style.css">
         <input type="text" placeholder="Enter Pincode"/>
         <button type="submit" id="submitBtn">SUBMIT</button>
         <h1>Address</h1>
